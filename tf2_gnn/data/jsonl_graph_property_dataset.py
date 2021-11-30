@@ -108,6 +108,7 @@ class JsonLGraphPropertyDataset(JsonLGraphDataset[GraphWithPropertySampleType]):
         return batch_features, {"target_value": raw_batch["target_value"]}
 
     def get_batch_tf_data_description(self) -> GraphBatchTFDataDescription:
+        # calls to graph_dataset.py:get_batch_tf_data_description
         data_description = super().get_batch_tf_data_description()
         return GraphBatchTFDataDescription(
             batch_features_types=data_description.batch_features_types,
