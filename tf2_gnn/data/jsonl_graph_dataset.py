@@ -78,6 +78,7 @@ class JsonLGraphDataset(GraphDataset[GraphSampleType]):
         """
         if self.metadata == {}:
             metadata_path = path.join("metadata.pkl.gz")
+            print(metadata_path)
             if metadata_path.exists():
                 logger.info(f"Loading metadata from {metadata_path}")
                 self._metadata = metadata_path.read_by_file_suffix()

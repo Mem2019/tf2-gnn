@@ -62,6 +62,9 @@ class JsonLGraphPropertiesDataset(JsonLGraphDataset[GraphWithPropertiesSampleTyp
             # value is expected and property values greater than this value will be
             # encoded as 1.0 and smaller values will be encoded as 0.0.
             "threshold_for_classification": None,
+            "add_self_loop_edges": False,
+            "tie_fwd_bkwd_edges": False,
+            "num_fwd_edge_types": 8
         }
         super_hypers.update(this_hypers)
         return super_hypers

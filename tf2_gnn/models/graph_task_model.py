@@ -371,7 +371,10 @@ class GraphTaskModel(tf.keras.Model):
         total_num_graphs = 0
         task_results = []
         total_loss = tf.constant(0, dtype=tf.float32)
+        print(dataset)
         for step, (batch_features, batch_labels) in enumerate(dataset):
+            print(batch_features, batch_labels)
+            exit(0)
             task_metrics = self._run_step(batch_features, batch_labels, training)
             # task_metrics["loss"] is batch average loss over graphs
             # (loss per graph from self.compute_task_metrics())

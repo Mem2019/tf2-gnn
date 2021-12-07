@@ -6,8 +6,9 @@ from ..models import (
     GraphRegressionTask,
     GraphBinaryClassificationTask,
     QM9RegressionTask,
+    GraphMultiLabelClassificationTask
 )
-from ..data import GraphDataset, JsonLGraphPropertyDataset, QM9Dataset, PPIDataset
+from ..data import GraphDataset, JsonLGraphPropertyDataset, QM9Dataset, PPIDataset, JsonLGraphPropertiesDataset
 
 
 class TaskInfo(NamedTuple):
@@ -94,5 +95,13 @@ register_task(
     dataset_class=JsonLGraphPropertyDataset,
     dataset_default_hypers={"threshold_for_classification": 23.0},
     model_class=GraphBinaryClassificationTask,
+    model_default_hypers={},
+)
+
+register_task(
+    task_name="GraphMultiBinaryClassification",
+    dataset_class=JsonLGraphPropertiesDataset,
+    dataset_default_hypers={"threshold_for_classification": None},
+    model_class=GraphMultiLabelClassificationTask,
     model_default_hypers={},
 )

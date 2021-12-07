@@ -26,7 +26,8 @@ class GraphMultiLabelClassificationTask(GraphTaskModel):
             "graph_aggregation_dropout_rate": 0.1,
             "classification_mlp_layers": [64, 32],
             "classification_mlp_dropout": 0.1,
-            "output_dimension": 10,
+            "output_dimension": 347,
+            'use_intermediate_gnn_results': False
         }
         super_params.update(these_hypers)
         return super_params

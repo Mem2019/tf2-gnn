@@ -37,6 +37,7 @@ class GraphSample(object):
     @property
     def adjacency_lists(self) -> List[np.ndarray]:
         """Adjacency information by edge type as list of ndarrays of shape [E, 2]"""
+        """Vertex index should start from 0, and must < V"""
         return self._adjacency_lists
 
     @property
