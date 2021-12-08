@@ -112,10 +112,18 @@ class JsonLGraphDataset(GraphDataset[GraphSampleType]):
         for datapoint in datapoints:
             self._loaded_data[target_fold].append(self._process_raw_datapoint(datapoint))
 
+    def _begin_load_data(self):
+        pass
+    def _end_load_data(self):
+        pass
+
     def __load_data(self, data_file: RichPath) -> List[GraphSampleType]:
-        return [
+        self._begin_load_data()
+        ret = [
             self._process_raw_datapoint(datapoint) for datapoint in data_file.read_by_file_suffix()
         ]
+        self._end_load_data()
+        return ret
 
     def _process_raw_datapoint(self, datapoint: Dict[str, Any]) -> GraphSampleType:
         node_features = datapoint["graph"]["node_features"]

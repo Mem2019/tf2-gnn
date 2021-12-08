@@ -3,8 +3,9 @@ from typing import Any, Dict, List, Optional, Tuple, TypeVar
 
 import numpy as np
 import tensorflow as tf
+from dpu_utils.utils import RichPath
 
-from .graph_dataset import GraphBatchTFDataDescription, GraphSample
+from .graph_dataset import GraphBatchTFDataDescription, GraphSample, GraphSampleType
 from .jsonl_graph_dataset import JsonLGraphDataset
 
 
@@ -74,6 +75,9 @@ class JsonLGraphPropertiesDataset(JsonLGraphDataset[GraphWithPropertiesSampleTyp
     ):
         super().__init__(params, metadata=metadata, **kwargs)
         self._threshold_for_classification = params["threshold_for_classification"]
+        self._label_size = None
+        self._one_counts = None
+        self._total_counts = 0
 
     def _process_raw_datapoint(
         self, datapoint: Dict[str, Any]
@@ -85,9 +89,16 @@ class JsonLGraphPropertiesDataset(JsonLGraphDataset[GraphWithPropertiesSampleTyp
         )
 
         target_value = np.array(datapoint["Property"], dtype='float64')
+        if self._label_size is None:
+            self._label_size = target_value.shape[0]
+            self._one_counts = np.zeros((self._label_size, ), dtype='float64')
+        else:
+            assert self._label_size == target_value.shape[0]
         if self._threshold_for_classification is not None:
             target_value = np.array(
                 target_value > self._threshold_for_classification, dtype='float64')
+        self._one_counts += target_value
+        self._total_counts += 1
 
         return GraphWithPropertiesSample(
             adjacency_lists=type_to_adj_list,
@@ -95,6 +106,14 @@ class JsonLGraphPropertiesDataset(JsonLGraphDataset[GraphWithPropertiesSampleTyp
             node_features=node_features,
             target_value=target_value,
         )
+
+    def _begin_load_data(self):
+        if self._label_size is not None:
+            self._one_counts = np.zeros((self._label_size, ), dtype='float64')
+            self._total_counts = 0
+
+    def _end_load_data(self):
+        print("Label statistics: {}".format(self._one_counts / self._total_counts))
 
     def _new_batch(self) -> Dict[str, Any]:
         new_batch = super()._new_batch()
@@ -114,9 +133,10 @@ class JsonLGraphPropertiesDataset(JsonLGraphDataset[GraphWithPropertiesSampleTyp
     def get_batch_tf_data_description(self) -> GraphBatchTFDataDescription:
         # calls to graph_dataset.py:get_batch_tf_data_description
         data_description = super().get_batch_tf_data_description()
+        assert self._label_size is not None
         return GraphBatchTFDataDescription(
             batch_features_types=data_description.batch_features_types,
             batch_features_shapes=data_description.batch_features_shapes,
             batch_labels_types={**data_description.batch_labels_types, "target_value": tf.float32},
-            batch_labels_shapes={**data_description.batch_labels_shapes, "target_value": (None,)},
+            batch_labels_shapes={**data_description.batch_labels_shapes, "target_value": (None, self._label_size)},
         )

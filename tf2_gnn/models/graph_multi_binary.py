@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Tuple, Optional, Union
 
 import tensorflow as tf
 from dpu_utils.tf2utils import MLP
+import numpy as np
 
 from tf2_gnn.data import GraphDataset
 from tf2_gnn.models import GraphTaskModel
@@ -26,7 +27,7 @@ class GraphMultiLabelClassificationTask(GraphTaskModel):
             "graph_aggregation_dropout_rate": 0.1,
             "classification_mlp_layers": [64, 32],
             "classification_mlp_dropout": 0.1,
-            "output_dimension": 347,
+            "output_dimension": 71,
             'use_intermediate_gnn_results': False
         }
         super_params.update(these_hypers)
